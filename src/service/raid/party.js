@@ -11,6 +11,19 @@ const addParty = async (contentId, name, startTime) => {
     console.log(e);
   }
 };
+
+const deleteById = async (partyId) => {
+  try {
+    const [result, field] = await connection.query(
+      "DELETE FROM party WHERE id = ?",
+      [[partyId]]
+    );
+    return result;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 const findAllParty = async () => {
   try {
     const now = new Date();
@@ -147,8 +160,6 @@ const findByName = async (name) => {
   }
 };
 
-
-
 const findByIds = async (partyIds) => {
   try {
     const now = new Date();
@@ -234,7 +245,8 @@ const partyService = {
   findAllPartyByContent,
   findByName,
   findByIds,
-  findByUserId
+  findByUserId,
+  deleteById,
 };
 
 module.exports = partyService;
