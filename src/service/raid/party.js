@@ -9,36 +9,32 @@ const addParty = async (contentId, name, startTime) => {
     console.log(e)
   }
 }
-// { id: 1, name: '쿠크세이튼 노말', party_name: '생임이네 쿠크파티' },
-// { id: 2, name: '발탄 노말', party_name: 'test' }
-
-
 const findAllParty = async () => {
   try {
     let tempResult;
     const now = new Date();
-    console.log(dateFormat(now))
-    // if (now.getDay() == 1) {
-    //   // console.log("a")
-    //   const [result, field] = await connection.query("SELECT id, contents, party_name, start_time, cnt FROM party_member_count where start_time BETWEEN ? and ?", [dateFormat(now), dateFormat(new Date(now.setDate(now.getDate() + 10)))]);
-    //   tempResult = result;
-    // } else if (now.getDay() == 2) {
-    //   // console.log("b")
-    //   const [result, field] = await connection.query("SELECT id, contents, party_name, start_time, cnt FROM party_member_count where start_time BETWEEN ? and ?", [dateFormat(now), dateFormat(new Date(now.setDate(now.getDate() + 9)))]);
-    //   tempResult = result;
-    // } else {
-    //   // console.log("c")
-    //   const [result, field] = await connection.query("SELECT id, contents, party_name, start_time, cnt FROM party_member_count where start_time BETWEEN ? and ?", [dateFormat(now), dateFormat(new Date(now.setDate(now.getDate() + 10 - now.getDay())))]);
-    //   tempResult = result;
-    // }
-    const [result, field] = await connection.query("SELECT id, contents, party_name, start_time, cnt FROM party_member_count where start_time BETWEEN ? and ?", [dateFormat(now), dateFormat(new Date(now.setDate(now.getDate() + 10)))]);
-    tempResult = result;
+    const [results, field] = await connection.query("SELECT id, contents, party_name, start_time, cnt FROM party_member_count where start_time BETWEEN ? and ? ORDER BY start_time", [dateFormat(now), dateFormat(new Date(now.setDate(now.getDate() + 7)))]);
+    const result = await Promise.all(results.map(async (result) => {
+      const [dealers, dealerFields] = await connection.query("SELECT * from member WHERE party_id = ? and role = 0", [result.id]);
+      const [supporters, supporterFields] = await connection.query("SELECT * from member WHERE party_id = ? and role = 1", [result.id]);
+      return {... result, dealer:dealers.map(dealer => dealer.name), supporter: supporters.map(supporter => supporter.name)}
+    }))
+    return result;
+  } catch (e) {
+    console.log(e)
+  }
+}
 
-    // console.log(tempResult)
-    // const resultString = tempResult.reduce((acc, cur) => {
-    //   const time = ` ${cur.start_time.getMonth() + 1}월 ${cur.start_time.getDate()}일 ${cur.start_time.getHours()}:${cur.start_time.getMinutes()}`;
-    //   return acc + `ID: ${cur.id},       레이드: ${cur.contents},       파티명: ${cur.party_name},       시간:${time},       인원 수:${cur.cnt} \n`
-    // }, "")
+const findAllPartyByContent = async (contentId) => {
+  try {
+    let tempResult;
+    const now = new Date();
+    const [results, field] = await connection.query("SELECT id, contents, party_name, start_time, cnt FROM party_member_count where contents_id = ? and  start_time BETWEEN ? and ? ORDER BY start_time", [contentId ,dateFormat(now), dateFormat(new Date(now.setDate(now.getDate() + 7)))]);
+    const result = await Promise.all(results.map(async (result) => {
+      const [dealers, dealerFields] = await connection.query("SELECT * from member WHERE party_id = ? and role = 0", [result.id]);
+      const [supporters, supporterFields] = await connection.query("SELECT * from member WHERE party_id = ? and role = 1", [result.id]);
+      return {... result, dealer:dealers.map(dealer => dealer.name), supporter: supporters.map(supporter => supporter.name)}
+    }))
     return result;
   } catch (e) {
     console.log(e)
@@ -52,12 +48,14 @@ const findByDay = async (dayNumber) => {
     now = new Date(now.setDate(now.getDate() + 1));
   }
   try{
-    const [result, field] = await connection.query("SELECT id, contents, party_name, start_time, cnt FROM party_member_count where DATE(start_time) = ?", [dateFormat(now)]);
+    const [results, field] = await connection.query("SELECT id, contents, party_name, start_time, cnt FROM party_member_count WHERE DATE(start_time) = ? ORDER BY start_time", [dateFormat(now)]);
+
+    const result = await Promise.all(results.map(async (result) => {
+      const [dealers, dealerFields] = await connection.query("SELECT * from member WHERE party_id = ? and role = 0", [result.id]);
+      const [supporters, supporterFields] = await connection.query("SELECT * from member WHERE party_id = ? and role = 1", [result.id]);
+      return {... result, dealer:dealers.map(dealer => dealer.name), supporter: supporters.map(supporter => supporter.name)}
+    }))
     console.log(result);
-    // const resultString = result.reduce((acc, cur) => {
-    //   const time = ` ${cur.start_time.getMonth() + 1}월 ${cur.start_time.getDate()}일 ${cur.start_time.getHours()}:${cur.start_time.getMinutes()}`;
-    //   return acc + `ID: ${cur.id},       레이드: ${cur.contents},       파티명: ${cur.party_name},       시간:${time},       인원 수:${cur.cnt} \n`
-    // }, "")
 
     return result;
   }catch (e) {
@@ -71,6 +69,6 @@ function dateFormat(source) {
 }
 
 
-const partyService = {addParty, findAllParty, findByDay};
+const partyService = {addParty, findAllParty, findByDay, findAllPartyByContent};
 
 module.exports = partyService;

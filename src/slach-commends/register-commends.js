@@ -24,13 +24,13 @@ const commands = [
       },
       {
         name: "party-name",
-        description: "파티명",
+        description: "파티명 (아무거나 적어도 됩니다)",
         type: ApplicationCommandOptionType.String,
         required: true,
       },
       {
         name: "start-time",
-        description: "시작시간",
+        description: "시작시간 공백주의!! ex)2023-10-31 00:00:00",
         type: ApplicationCommandOptionType.String,
         required: true,
       }
@@ -42,19 +42,13 @@ const commands = [
     options: [
       {
         name: "party-id",
-        description: "파티 id",
+        description: "파티 번호",
         type: ApplicationCommandOptionType.Number,
         required: true,
       },
       {
-        name: "user-name",
-        description: "이름",
-        type: ApplicationCommandOptionType.String,
-        required: true,
-      },
-      {
         name: "role",
-        description: "포지션",
+        description: "딜러 or 서폿",
         type: ApplicationCommandOptionType.Number,
         required: true,
         choices: role
@@ -66,8 +60,8 @@ const commands = [
     description: "생성된 파티를 확인합니다."
   },
   {
-    name: "요일별파티확인",
-    description: "생성된 파티를 확인합니다.",
+    name: "요일로파티찾기",
+    description: "요일을 선택하면 해당날짜의 파티를 리턴",
     options: [
       {
         name: "day",
@@ -77,6 +71,18 @@ const commands = [
         choices: days
       }
     ]
+  },{
+    name: "레이드로파티찾기",
+    description: "레이드 선택시 해당 레이드의 파티를 리턴",
+    options: [
+      {
+        name: "content",
+        description: "레이드갈 컨텐츠",
+        type: ApplicationCommandOptionType.Number,
+        required: true,
+        choices: contents
+      }
+    ]
   },
   {
     name: "파티멤버확인",
@@ -84,26 +90,20 @@ const commands = [
     options: [
       {
         name: "party-id",
-        description: "파티 ID",
+        description: "파티 번호",
         type: ApplicationCommandOptionType.Number,
         required: true
       }
     ]
   },
   {
-    name: "파티멤버취소",
+    name: "파티탈퇴",
     description: "파티에서 빠짐",
     options: [
       {
         name: "party-id",
-        description: "파티 ID",
+        description: "파티 번호",
         type: ApplicationCommandOptionType.Number,
-        required: true
-      },
-      {
-        name: "name",
-        description: "케릭터 닉네임",
-        type: ApplicationCommandOptionType.String,
         required: true
       }
     ]
