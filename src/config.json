@@ -1,0 +1,11 @@
+{
+  "token": "MTE0OTc2MzcwNjEzODM5NDY3NA.GYYB16.7kA0pT_I_ekEFiFA1hCSnwv0mzihSsZmz8Nz9E",
+  "guildId": "1150377423293141072",
+  "clientId": "1149763706138394674",
+
+  "DB_PORT": "3306",
+  "DB_HOST": "127.0.0.1",
+  "DB_USER": "root",
+  "DB_PASSWORD": "0319",
+  "DB_NAME": "raid"
+}

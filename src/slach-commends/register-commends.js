@@ -2,6 +2,7 @@ require('dotenv').config();
 const {REST} = require('discord.js');
 const {Routes, ApplicationCommandOptionType} = require('discord-api-types/v9');
 const contents = require("../util/content")
+const difficulty = require("../util/difficulty")
 const role = require("../util/role")
 const days = require("../util/days")
 
@@ -16,20 +17,27 @@ const commands = [
     description: "파티를 생성합니다.",
     options: [
       {
-        name: "content",
+        name: "보스",
         description: "레이드갈 컨텐츠",
         type: ApplicationCommandOptionType.Number,
         required: true,
         choices: contents
       },
       {
-        name: "party-name",
+        name: "난이도",
+        description: "레이드갈 컨텐츠",
+        type: ApplicationCommandOptionType.Number,
+        required: true,
+        choices: difficulty
+      },
+      {
+        name: "파티명",
         description: "파티명 (아무거나 적어도 됩니다)",
         type: ApplicationCommandOptionType.String,
         required: true,
       },
       {
-        name: "start-time",
+        name: "시작시간",
         description: "시작시간 공백주의!! ex)2023-10-31 00:00:00",
         type: ApplicationCommandOptionType.String,
         required: true,
@@ -107,6 +115,19 @@ const commands = [
         required: true
       }
     ]
+  },
+  {
+    name: "123",
+    description: "파티에서 빠짐",
+    options: [
+      {
+        name: "party-id",
+        description: "파티 번호",
+        type: ApplicationCommandOptionType.Number,
+        choices:[new Date().getMinutes() %2 == 0 ? {name:"123", value:1}:{name:456,value:2} ],
+        required: true
+      }
+    ]
   }
 ];
 
@@ -115,7 +136,7 @@ const rest = new REST({version: '10'}).setToken(process.env.TOKEN);
 const addSlashCommands = (async () => {
   try {
     console.log("Registering slash commands...")
-    console.log(commands)
+    // console.log(commands)
 
     await rest.put(
       Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
