@@ -13,7 +13,6 @@ const addParty = async (contentId, name, startTime) => {
 };
 const findAllParty = async () => {
   try {
-    let tempResult;
     const now = new Date();
     const [results, field] = await connection.query(
       "SELECT id, contents, party_name, start_time, cnt FROM party_member_count where start_time BETWEEN ? and ? ORDER BY start_time",
