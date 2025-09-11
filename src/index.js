@@ -10,11 +10,15 @@ async function registerSlashCommands() {
   const commands = [];
   const commandPath = path.join(__dirname, "commands"); // __dirname 기준 절대 경로
   if (!fs.existsSync(commandPath)) {
-    console.log("⚠️ commands 폴더가 존재하지 않습니다. 생성 후 명령어 파일을 넣으세요.");
+    console.log(
+      "⚠️ commands 폴더가 존재하지 않습니다. 생성 후 명령어 파일을 넣으세요."
+    );
     return;
   }
 
-  const commandFiles = fs.readdirSync(commandPath).filter(file => file.endsWith(".js"));
+  const commandFiles = fs
+    .readdirSync(commandPath)
+    .filter((file) => file.endsWith(".js"));
 
   for (const file of commandFiles) {
     const command = require(path.join(commandPath, file));
@@ -55,7 +59,7 @@ async function registerSlashCommands() {
 
   const commandPath = path.join(__dirname, "commands");
   const commandFiles = fs.existsSync(commandPath)
-    ? fs.readdirSync(commandPath).filter(file => file.endsWith(".js"))
+    ? fs.readdirSync(commandPath).filter((file) => file.endsWith(".js"))
     : [];
 
   for (const file of commandFiles) {
@@ -66,18 +70,32 @@ async function registerSlashCommands() {
   client.once("ready", () => {
     console.log(`${client.user.tag} 봇이 준비되었습니다!`);
   });
-
   client.on("interactionCreate", async (interaction) => {
-    if (!interaction.isChatInputCommand()) return;
+    if (interaction.isAutocomplete()) {
+      const command = client.commands.get(interaction.commandName);
+      if (command && command.autocomplete) {
+        try {
+          await command.autocomplete(interaction);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+      return; // autocomplete 처리 후 끝내기
+    }
 
-    const command = client.commands.get(interaction.commandName);
-    if (!command) return;
+    if (interaction.isChatInputCommand()) {
+      const command = client.commands.get(interaction.commandName);
+      if (!command) return;
 
-    try {
-      await command.execute(interaction);
-    } catch (error) {
-      console.error(error);
-      await interaction.reply({ content: "명령어 실행 중 오류 발생!", ephemeral: true });
+      try {
+        await command.execute(interaction);
+      } catch (error) {
+        console.error(error);
+        await interaction.reply({
+          content: "명령어 실행 중 오류 발생!",
+          ephemeral: true,
+        });
+      }
     }
   });
 
