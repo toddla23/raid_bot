@@ -5,8 +5,8 @@ const partyService = require("../service/raid/party");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("파티확인")
-    .setDescription("생성된 파티를 확인합니다."),
+    .setName("확인")
+    .setDescription("생성된 파티 모두를 확인합니다"),
 
   async execute(interaction) {
     const result = await partyService.findAllParty();

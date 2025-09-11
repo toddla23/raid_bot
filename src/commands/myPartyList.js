@@ -5,7 +5,7 @@ const partyService = require("../service/raid/party");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("내파티")
-    .setDescription("생성된 파티를 확인합니다."),
+    .setDescription("내가 참여하는 파티를 확인해요"),
 
   async execute(interaction) {
     const result = await partyService.findByUserId(interaction.user.id);

@@ -3,8 +3,8 @@ const partyService = require("../service/raid/party.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("파티삭제")
-    .setDescription("내가 만든 파티를 삭제합니다.")
+    .setName("삭제")
+    .setDescription("내가 만든 파티를 삭제합니다")
     .addStringOption(option =>
       option
         .setName("파티명")

@@ -4,8 +4,8 @@ const partyService = require("../service/raid/party.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("파티탈퇴")
-    .setDescription("참여 중인 파티에서 탈퇴합니다.")
+    .setName("탈퇴")
+    .setDescription("참여 중인 파티에서 탈퇴합니다")
     .addStringOption(
       (option) =>
         option

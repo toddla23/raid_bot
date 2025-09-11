@@ -9,8 +9,8 @@ const memberService = require("../service/raid/member.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("파티생성")
-    .setDescription("파티를 생성합니다.")
+    .setName("추가")
+    .setDescription("파티를 추가합니다")
     .addNumberOption((option) =>
       option
         .setName("보스")
@@ -33,8 +33,14 @@ module.exports = {
     )
     .addStringOption((option) =>
       option
-        .setName("시작시간")
-        .setDescription("시작시간 (예: 2023-10-31 00:00:00)")
+        .setName("날짜")
+        .setDescription("날짜 (예: 10-31)")
+        .setRequired(true)
+    )
+    .addStringOption((option) =>
+      option
+        .setName("시간")
+        .setDescription("시간 (예: 18:30)")
         .setRequired(true)
     ),
 
@@ -42,7 +48,7 @@ module.exports = {
     const boss = interaction.options.getNumber("보스");
     const level = interaction.options.getNumber("난이도");
     const name = interaction.options.getString("파티명");
-    const time = interaction.options.getString("시작시간");
+    const time = `${new Date().getFullYear()}-${interaction.options.getString("날짜")} ${interaction.options.getString("시간")}:00`;
 
     const result = await partyService.addParty(boss, name, time);
     if (!result) {
@@ -86,6 +92,6 @@ module.exports = {
 
     // interaction.reply(`이벤트가 ${hours}:${minutes}에 예약되었습니다.`);
 
-    // interaction.reply(` "${name}"파티가 생성 되었습니다.`);
+    await interaction.reply(` "${name}"파티가 생성 되었습니다.`);
   },
 };

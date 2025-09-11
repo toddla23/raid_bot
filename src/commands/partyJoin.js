@@ -10,8 +10,8 @@ const roleChoices = [
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("파티참여")
-    .setDescription("파티에 참여합니다.")
+    .setName("참여")
+    .setDescription("파티에 참여합니다")
     .addStringOption(
       (option) =>
         option
