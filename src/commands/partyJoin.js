@@ -3,11 +3,6 @@ const memberService = require("../service/raid/member.js");
 const partyService = require("../service/raid/party.js");
 const getCharacterData = require("../util/lostarkApi.js");
 
-const roleChoices = [
-  { name: "딜러", value: 0 },
-  { name: "서포터", value: 1 },
-];
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("참여")
@@ -22,18 +17,11 @@ module.exports = {
     )
     .addStringOption((option) =>
       option.setName("캐릭터명").setDescription("123").setRequired(true)
-    )
-    .addNumberOption((option) =>
-      option
-        .setName("포지션")
-        .setDescription("딜러 또는 서포터")
-        .setRequired(true)
-        .addChoices(...roleChoices)
     ),
+
   // Interaction 처리
   async execute(interaction) {
     const partyId = interaction.options.getString("파티명");
-    const role = interaction.options.getNumber("포지션");
     const characterName = interaction.options.getString("캐릭터명");
 
     const userId = interaction.user.id;
@@ -45,7 +33,7 @@ module.exports = {
       userName,
       userId,
       characterName,
-      role
+      0
     );
 
     // console.log(await memberService.findByParty(partyId));
