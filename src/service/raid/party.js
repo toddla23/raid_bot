@@ -43,8 +43,15 @@ const findAllParty = async () => {
         );
         return {
           ...result,
-          dealer: dealers.map((dealer) => dealer.name),
-          supporter: supporters.map((supporter) => supporter.name),
+          dealer: dealers.map((dealer) => {
+            return { name: dealer.name, character_name: dealer.character_name };
+          }),
+          supporter: supporters.map((supporter) => {
+            return {
+              name: supporter.name,
+              character_name: supporter.character_name,
+            };
+          }),
         };
       })
     );
