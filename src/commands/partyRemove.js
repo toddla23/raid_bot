@@ -4,7 +4,7 @@ const partyService = require("../service/raid/party.js");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("삭제")
-    .setDescription("내가 만든 파티를 삭제합니다")
+    .setDescription("파티를 삭제합니다")
     .addStringOption(option =>
       option
         .setName("파티명")
@@ -16,10 +16,6 @@ module.exports = {
   // 실제 삭제 처리
   async execute(interaction) {
     const partyValue = interaction.options.getString("파티명");
-    const userId = interaction.user.id;
-
-    // DB에서 파티 찾기
-
 
     // 삭제 처리
     await partyService.deleteById(partyValue);
