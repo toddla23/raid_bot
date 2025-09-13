@@ -10,10 +10,11 @@ module.exports = {
   async execute(interaction) {
     const result = await partyService.findAllParty();
 
-    if (!result) {
+    if (!result | result.length == 0 ) {
       interaction.reply("파티가 없어요 ㅠㅠ");
       return;
     }
+
 
     const embeds = await Promise.all(
       result.map(async (party) => {
