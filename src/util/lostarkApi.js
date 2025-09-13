@@ -12,8 +12,8 @@ async function getCharacterData(characterName) {
       },
     }
   );
-  if (response.status == 200) {
-    const result = await response.json();
+  const result = await response.json();
+  if (result != null) {
     return {
       CharacterName: result.CharacterName,
       CharacterClassName: result.CharacterClassName,
@@ -23,9 +23,9 @@ async function getCharacterData(characterName) {
   }
   return {
     CharacterName: characterName,
-    CharacterClassName: "00",
-    ItemAvgLevel: "00",
-    CombatPower: "00",
+    CharacterClassName: "error",
+    ItemAvgLevel: "error",
+    CombatPower: "error",
   };
 }
 
