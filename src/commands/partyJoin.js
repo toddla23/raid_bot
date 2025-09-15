@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const memberService = require("../service/raid/member.js");
 const partyService = require("../service/raid/party.js");
 const getCharacterData = require("../util/lostarkApi.js");
+const sendPartyList = require("../util/sendPartyList.js");
 
 const roleChoices = [
   { name: "딜러", value: 0 },
@@ -56,6 +57,8 @@ module.exports = {
       content: `✅ ${characterName} (${characterData.ItemAvgLevel}) 캐릭터로 파티에 참여했습니다.`,
       ephemeral: true, // 🔒 본인만 볼 수 있음
     });
+
+    await sendPartyList(interaction.client);
 
     // embed 출력
     // const embed = new EmbedBuilder()

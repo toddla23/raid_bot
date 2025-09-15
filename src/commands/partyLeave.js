@@ -1,6 +1,8 @@
 const { SlashCommandBuilder } = require("discord.js");
 const memberService = require("../service/raid/member.js");
 const partyService = require("../service/raid/party.js");
+const sendPartyList = require("../util/sendPartyList.js");
+
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -26,6 +28,8 @@ module.exports = {
       content: `✅ 파티에서 탈퇴했습니다.`,
       ephemeral: true,
     });
+
+    await sendPartyList(interaction.client);
   },
 
   // 자동완성 (사용자가 참여한 파티만 보여주기)

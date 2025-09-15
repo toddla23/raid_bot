@@ -1,11 +1,15 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
+const sendPartyList = require("../util/sendPartyList.js");
+
 const contents = require("../util/content");
 const difficulty = require("../util/difficulty");
 const timeParesr = require("../util/timeParesr.js");
 
 const partyService = require("../service/raid/party.js");
 const memberService = require("../service/raid/member.js");
+
+global.scheduledParties = new Map();
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -17,13 +21,6 @@ module.exports = {
         .setDescription("레이드갈 컨텐츠")
         .setRequired(true)
         .addChoices(...contents)
-    )
-    .addNumberOption((option) =>
-      option
-        .setName("난이도")
-        .setDescription("레이드 난이도")
-        .setRequired(true)
-        .addChoices(...difficulty)
     )
     .addStringOption((option) =>
       option
@@ -46,13 +43,14 @@ module.exports = {
 
   async execute(interaction) {
     const boss = interaction.options.getNumber("보스");
-    const level = interaction.options.getNumber("난이도");
     const name = interaction.options.getString("파티명");
-    const time = `${new Date().getFullYear()}-${interaction.options.getString("날짜")} ${interaction.options.getString("시간")}:00`;
+    const time = `${new Date().getFullYear()}-${interaction.options.getString(
+      "날짜"
+    )} ${interaction.options.getString("시간")}:00`;
 
     const result = await partyService.addParty(boss, name, time);
     if (!result) {
-      interaction.reply("error!");
+      interaction.reply({ content: "error!", ephemeral: true });
       return;
     }
     // console.log(result);
@@ -60,7 +58,10 @@ module.exports = {
     const delay = timeParesr(startTime);
 
     if (delay <= 0 || !delay) {
-      interaction.reply("지난 시간에 이벤트를 예약할 수 없습니다.");
+      interaction.reply({
+        content: "지난 시간에 이벤트를 예약할 수 없습니다.",
+        ephemeral: true,
+      });
       return;
     }
 
@@ -75,16 +76,8 @@ module.exports = {
           value: `${result1.party.name}`,
         },
         {
-          name: "딜러",
-          value: `닉네임 : ${result1.dealer.map((name) => {
-            return `<@${name.user_id}>, `;
-          })}`,
-        },
-        {
-          name: "서포터",
-          value: `닉네임 : ${result1.supporter.map((name) => {
-            return `<@${name.user_id}>, `;
-          })}`,
+          name: "시간",
+          value: `${time}`,
         }
       );
     interaction.channel.send({ embeds: [embed] });
@@ -92,6 +85,18 @@ module.exports = {
 
     // interaction.reply(`이벤트가 ${hours}:${minutes}에 예약되었습니다.`);
 
-    await interaction.reply(` "${name}"파티가 생성 되었습니다.`);
+    await interaction.reply({
+      content: `"${name}"파티가 생성 되었습니다.`,
+      ephemeral: true,
+    });
+    await sendPartyList(interaction.client);
+
+    // ✅ 알림 예약 (setTimeout)
+    const timeoutId = setTimeout(async () => {
+      await interaction.channel.send(`⏰ "${name}" 파티 시작 시간입니다!`);
+      scheduledParties.delete(partyId);
+    }, delay);
+
+    scheduledParties.set(partyId, timeoutId);
   },
 };

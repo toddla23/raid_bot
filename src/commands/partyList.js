@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const getCharacterData = require("../util/lostarkApi.js");
 const partyService = require("../service/raid/party");
+const sendPartyList = require("../util/sendPartyList.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -10,11 +11,13 @@ module.exports = {
   async execute(interaction) {
     const result = await partyService.findAllParty();
 
-    if (!result | result.length == 0 ) {
-      interaction.reply("파티가 없어요 ㅠㅠ");
+    if (!result | (result.length == 0)) {
+      await interaction.reply({
+        content: "파티가 없어요 ㅠㅠ",
+        ephemeral: true,
+      });
       return;
     }
-
 
     const embeds = await Promise.all(
       result.map(async (party) => {
@@ -78,6 +81,7 @@ module.exports = {
       })
     );
 
-    await interaction.reply({ embeds: embeds });
+    await interaction.reply({ embeds: embeds, ephemeral: true });
+    await sendPartyList(interaction.client);
   },
 };
