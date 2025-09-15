@@ -24,6 +24,7 @@ module.exports = {
     await memberService.deleteByPartyAndName(partyValue, userId);
     await interaction.reply({
       content: `✅ 파티에서 탈퇴했습니다.`,
+      ephemeral: true,
     });
   },
 
