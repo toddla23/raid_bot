@@ -11,7 +11,10 @@ module.exports = {
   async execute(interaction) {
     const result = await partyService.findByUserId(interaction.user.id);
     if (result.length == 0) {
-      await interaction.reply("파티가 없어요 ㅠㅠ");
+      await interaction.reply({
+        content: "파티가 없어요 ㅠㅠ",
+        ephemeral: true,
+      });
       return;
     }
 
@@ -31,8 +34,8 @@ module.exports = {
             return characterData;
           })
         );
-        console.log(dealers)
-        console.log(supporters)
+        console.log(dealers);
+        console.log(supporters);
 
         const embed = new EmbedBuilder()
           .setTitle(`${party.id}. ${party.party_name}`)
@@ -76,6 +79,6 @@ module.exports = {
       })
     );
 
-    await interaction.reply({ embeds: embeds });
+    await interaction.reply({ embeds: embeds, ephemeral: true });
   },
 };
