@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const partyService = require("../service/raid/party.js");
 const sendPartyList = require("../util/sendPartyList.js");
+const formatDateWithKoreanDay = require("../util/formatDate");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -32,7 +33,9 @@ module.exports = {
     const myParties = await partyService.findByName(focusedValue);
 
     const choices = myParties.map((p) => ({
-      name: `${p.party_name} (${p.contents}, ${p.start_time})`, // 유저가 보는 텍스트
+      name: `${p.party_name} | ${p.contents} | ${formatDateWithKoreanDay(
+        p.start_time
+      )}`, // 유저가 보는 텍스트
       value: `${p.id}`, // 실제로 execute에 들어가는 값
     }));
 

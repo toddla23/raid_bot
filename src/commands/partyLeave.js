@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const memberService = require("../service/raid/member.js");
 const partyService = require("../service/raid/party.js");
 const sendPartyList = require("../util/sendPartyList.js");
+const formatDateWithKoreanDay = require("../util/formatDate");
 
 
 module.exports = {
@@ -41,7 +42,7 @@ module.exports = {
 
     // Discord에 보낼 choices 배열
     const choices = joinedParties.map((p) => ({
-      name: p.party_name, // 유저가 보는 이름
+      name: `${p.party_name} | ${p.contents} | ${formatDateWithKoreanDay(p.start_time)}`, // 유저가 보는 이름
       value: `${p.id}`, // 실제 커맨드에서 넘어오는 값
     }));
 

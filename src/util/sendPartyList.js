@@ -28,7 +28,7 @@ async function sendPartyList(client) {
           { name: "목표", value: party.contents, inline: true },
           { 
             name: "출발 시간", 
-            value: `${party.start_time.toLocaleString("ko-KR")}`, 
+            value: formatDate(party.start_time), 
             inline: false 
           },
           {
@@ -66,6 +66,18 @@ async function sendPartyList(client) {
   // 기존 메시지 없거나 수정 실패 → 새로 전송
   const newMsg = await channel.send({ embeds: finalEmbeds });
   lastMessageId = newMsg.id;
+}
+
+function formatDate(date) {
+  const koreanDays = ["일", "월", "화", "수", "목", "금", "토"];
+  const dayOfWeek = koreanDays[date.getDay()];
+
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hour = date.getHours().toString().padStart(2, "0");
+  const minute = date.getMinutes().toString().padStart(2, "0");
+
+  return `${month}.${day} (${dayOfWeek}) ${hour}:${minute}`;
 }
 
 module.exports = sendPartyList;

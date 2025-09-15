@@ -3,6 +3,7 @@ const memberService = require("../service/raid/member.js");
 const partyService = require("../service/raid/party.js");
 const getCharacterData = require("../util/lostarkApi.js");
 const sendPartyList = require("../util/sendPartyList.js");
+const formatDateWithKoreanDay = require("../util/formatDate");
 
 const roleChoices = [
   { name: "딜러", value: 0 },
@@ -92,9 +93,7 @@ module.exports = {
     // console.log(allParties);
     // findName에 검색어 전달해서 필터링 가능
     const choices = allParties.map((p) => ({
-      name: `${p.party_name} | ${p.contents} | ${
-        p.start_time.getMonth() + 1
-      }월 ${p.start_time.getDate()}일 ${p.start_time.getHours()}:${p.start_time.getMinutes()}`,
+      name: `${p.party_name} | ${p.contents} | ${formatDateWithKoreanDay(p.start_time)}`,
       value: `${p.id}`,
     }));
     await interaction.respond(
