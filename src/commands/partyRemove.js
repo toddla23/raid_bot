@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const partyService = require("../service/raid/party.js");
 const sendPartyList = require("../util/sendPartyList.js");
 const formatDateWithKoreanDay = require("../util/formatDate");
+const memberService = require("../service/raid/member.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -19,6 +20,15 @@ module.exports = {
   // 실제 삭제 처리
   async execute(interaction) {
     const partyValue = interaction.options.getString("파티명");
+
+    const result1 = await memberService.findByParty(partyValue);
+
+    if (result1.dealer.length != 0 || result1.supporter.length != 0) {
+      return await interaction.reply({
+        content: `😰 ${partyValue} 파티에 공대원이 있어요.`,
+        ephemeral: true
+      });
+    }
 
     // 삭제 처리
     await partyService.deleteById(partyValue);
