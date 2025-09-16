@@ -80,7 +80,7 @@ module.exports = {
           value: `${time}`,
         }
       );
-    interaction.channel.send({ embeds: [embed] });
+    // interaction.channel.send({ embeds: [embed] });
     // 여기에서 원하는 이벤트 동작을 추가할 수 있습니다.
 
     // interaction.reply(`이벤트가 ${hours}:${minutes}에 예약되었습니다.`);
@@ -91,11 +91,11 @@ module.exports = {
     });
     await sendPartyList(interaction.client);
 
-    // ✅ 알림 예약 (setTimeout)
-    const timeoutId = setTimeout(async () => {
-      await interaction.channel.send(`⏰ "${name}" 파티 시작 시간입니다!`);
-      scheduledParties.delete(partyId);
-    }, delay);
+    // // ✅ 알림 예약 (setTimeout)
+    // const timeoutId = setTimeout(async () => {
+    //   await interaction.channel.send(`⏰ "${name}" 파티 시작 시간입니다!`);
+    //   scheduledParties.delete(partyId);
+    // }, delay);
 
     scheduledParties.set(partyId, timeoutId);
   },

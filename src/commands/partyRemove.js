@@ -22,7 +22,9 @@ module.exports = {
 
     // 삭제 처리
     await partyService.deleteById(partyValue);
-    await interaction.reply({ content: `🗑️ 파티를 삭제했습니다.` });
+    await interaction.reply({
+      content: `🗑️ ${partyValue} 파티를 삭제했습니다.`,
+    });
     await sendPartyList(interaction.client);
   },
 

@@ -34,8 +34,8 @@ module.exports = {
             return characterData;
           })
         );
-        console.log(dealers);
-        console.log(supporters);
+        // console.log(dealers);
+        // console.log(supporters);
 
         const embed = new EmbedBuilder()
           .setTitle(`${party.id}. ${party.party_name}`)
