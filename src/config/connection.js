@@ -1,24 +1,29 @@
-const mysql = require('mysql2/promise')
-
+const mysql = require("mysql2/promise");
+const {
+  DB_PORT,
+  DB_HOST,
+  DB_USER,
+  DB_PASSWORD,
+  DB_NAME,
+} = require("../config.json");
 
 // const {
 //   MYSQL_HOST,
 //   MYSQL_USER,
 //   MYSQL_PW,
 //   MYSQL_DB,
-// } = process.env;
+// } = ;
 
 const connection = mysql.createPool({
-  port: process.env.DB_PORT,
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  port: DB_PORT,
+  host: DB_HOST,
+  user: DB_USER,
+  password: DB_PASSWORD,
+  database: DB_NAME,
   connectTimeout: 5000,
   connectionLimit: 30, //default 10
   keepAliveInitialDelay: 10000,
   enableKeepAlive: true,
-})
-
+});
 
 module.exports = connection;
