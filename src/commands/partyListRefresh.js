@@ -1,4 +1,6 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+
+const sendPartyList = require("../util/sendPartyList.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
