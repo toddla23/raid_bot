@@ -72,7 +72,20 @@ async function registerSlashCommands() {
 
   client.once("ready", () => {
     console.log(`${client.user.tag} 봇이 준비되었습니다!`);
+    cron.schedule("0  * * *", async () => {
+      const now = new Date();
+      const parties = await partyService.findUpcomingNotNotified(now);
+
+      for (const party of parties) {
+        const channel = await client.channels.fetch(bbsChannelId);
+        await channel.send(
+          `⏰ **"${party.party_name}" 파티 시작 시간입니다!**\n📅 ${party.start_time}\n🎯 목표: ${party.contents}`
+        );
+        await partyService.markNotified(party.id);
+      }
+    });
   });
+
   client.on("interactionCreate", async (interaction) => {
     if (interaction.isAutocomplete()) {
       const command = client.commands.get(interaction.commandName);
@@ -113,19 +126,3 @@ async function registerSlashCommands() {
 
   client.login(token);
 })();
-
-
-//node cron 으로 스케줄링 하는거
-/*
-cron.schedule("* * * * *", async () => {
-  const now = new Date();
-  const parties = await partyService.findUpcomingNotNotified(now);
-
-  for (const party of parties) {
-    const channel = await client.channels.fetch(party.channel_id);
-    await channel.send(`⏰ "${party.party_name}" 파티 시작 시간입니다!`);
-    await partyService.markNotified(party.id);
-  }
-});
-
-*/
