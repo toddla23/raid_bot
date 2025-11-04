@@ -32,13 +32,13 @@ async function sendPartyList(client) {
             inline: false 
           },
           {
-            name: "딜러",
+            name: `딜러 (${dealers.length} / 6)`,
             value: dealers.length === 0
               ? "없음"
               : dealers.map(d => `${d.CharacterName} | ${d.CharacterClassName} (${d.ItemAvgLevel})`).join("\n")
           },
           {
-            name: "서포터",
+            name: `서포터 (${supporters.length} / 2)`,
             value: supporters.length === 0
               ? "없음"
               : supporters.map(s => `${s.CharacterName} | ${s.CharacterClassName} (${s.ItemAvgLevel})`).join("\n")
