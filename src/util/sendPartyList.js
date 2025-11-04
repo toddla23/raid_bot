@@ -23,7 +23,7 @@ async function sendPartyList(client) {
       );
 
       return new EmbedBuilder()
-        .setTitle(`${party.id}. ${party.party_name}`)
+        .setTitle(`${party.id}. ${party.party_name}  ${dealers.length === 6 & supporters.length == 2? "[마감]" : ""}`)
         .addFields(
           { name: "목표", value: party.contents, inline: true },
           { 
