@@ -6,7 +6,8 @@ const { REST, Routes } = require("discord.js");
 const { clientId, guildId, token } = require("./config.json");
 
 const cron = require("node-cron");
-const asd = require("./util/sendDM");
+const snedPartyDM = require("./util/sendDM");
+const sendPartyList = require("./util/sendPartyList");
 
 // 슬래시 커맨드 등록 함수
 async function registerSlashCommands() {
@@ -72,9 +73,16 @@ async function registerSlashCommands() {
 
   client.once("ready", () => {
     console.log(`${client.user.tag} 봇이 준비되었습니다!`);
+    // 매 분 할 작업
     cron.schedule("0 * * * * *", async () => {
-      // sendDM(client, "447362114563080202", "HI");
-      asd(client);
+      const now = new Date();
+      now.setMinutes(now.getMinutes() + 5);
+      snedPartyDM(now, client);
+    });
+
+    // 매일 할 작업
+    cron.schedule("0 3 * * *", async () => {
+      sendPartyList(client);
     });
   });
 

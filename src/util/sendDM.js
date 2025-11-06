@@ -19,13 +19,12 @@ async function sendDM(client, userId, embed) {
   }
 }
 
-async function asd(client) {
-  const now = new Date();
-  now.setMinutes(now.getMinutes() + 5);
-  const nowString = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
+async function snedPartyDM(date, client) {
 
-  const partys = await partyService.findByDateTime(nowString);
-  console.log(`message sended ${nowString}`)
+  const dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+
+  const partys = await partyService.findByDateTime(dateString);
+  console.log(`message sended ${dateString}`)
 
   partys.map((party) => {
     console.log(`⏰ "${party.party_name}" 파티 시작 5분전 입니다!`);
@@ -60,4 +59,4 @@ async function asd(client) {
   });
 }
 
-module.exports = asd;
+module.exports = snedPartyDM;
