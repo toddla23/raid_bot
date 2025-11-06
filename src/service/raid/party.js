@@ -242,6 +242,48 @@ const findByUserId = async (userId) => {
   }
 };
 
+const findByDateTime = async (dateString) => {
+  try {
+    const now = new Date();
+    const [results, field] = await connection.query(
+      "SELECT id, contents, party_name, start_time, cnt FROM party_member_count where start_time = ?",
+      [dateString]
+    );
+    const result = await Promise.all(
+      results.map(async (result) => {
+        const [dealers, dealerFields] = await connection.query(
+          "SELECT * from member WHERE party_id = ? and role = 0",
+          [result.id]
+        );
+        const [supporters, supporterFields] = await connection.query(
+          "SELECT * from member WHERE party_id = ? and role = 1",
+          [result.id]
+        );
+        return {
+          ...result,
+          dealer: dealers.map((dealer) => {
+            return {
+              name: dealer.name,
+              character_name: dealer.character_name,
+              userId: dealer.user_id,
+            };
+          }),
+          supporter: supporters.map((supporter) => {
+            return {
+              name: supporter.name,
+              character_name: supporter.character_name,
+              userId: supporter.user_id,
+            };
+          }),
+        };
+      })
+    );
+    return result;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 function dateFormat(source) {
   return (
     source.getFullYear() +
@@ -261,6 +303,7 @@ const partyService = {
   findByIds,
   findByUserId,
   deleteById,
+  findByDateTime,
 };
 
 module.exports = partyService;

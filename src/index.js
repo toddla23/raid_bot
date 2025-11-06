@@ -6,7 +6,7 @@ const { REST, Routes } = require("discord.js");
 const { clientId, guildId, token } = require("./config.json");
 
 const cron = require("node-cron");
-const partyService = require("./service/raid/party.js");
+const asd = require("./util/sendDM");
 
 // 슬래시 커맨드 등록 함수
 async function registerSlashCommands() {
@@ -72,17 +72,9 @@ async function registerSlashCommands() {
 
   client.once("ready", () => {
     console.log(`${client.user.tag} 봇이 준비되었습니다!`);
-    cron.schedule("0  * * *", async () => {
-      const now = new Date();
-      const parties = await partyService.findUpcomingNotNotified(now);
-
-      for (const party of parties) {
-        const channel = await client.channels.fetch(bbsChannelId);
-        await channel.send(
-          `⏰ **"${party.party_name}" 파티 시작 시간입니다!**\n📅 ${party.start_time}\n🎯 목표: ${party.contents}`
-        );
-        await partyService.markNotified(party.id);
-      }
+    cron.schedule("0 * * * * *", async () => {
+      // sendDM(client, "447362114563080202", "HI");
+      asd(client);
     });
   });
 
