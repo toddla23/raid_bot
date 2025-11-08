@@ -9,7 +9,7 @@ module.exports = {
     .setDescription("생성된 파티 모두를 확인합니다"),
 
   async execute(interaction) {
-    const result = await partyService.findAllParty();
+    const result = await partyService.findAllParty(interaction.guildId);
 
     if (!result | (result.length == 0)) {
       await interaction.reply({
@@ -82,6 +82,6 @@ module.exports = {
     );
 
     await interaction.reply({ embeds: embeds, ephemeral: true });
-    await sendPartyList(interaction.client);
+    await sendPartyList(interaction.client, interaction.guildId);
   },
 };

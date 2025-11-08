@@ -59,7 +59,7 @@ module.exports = {
       ephemeral: true, // 🔒 본인만 볼 수 있음
     });
 
-    await sendPartyList(interaction.client);
+    await sendPartyList(interaction.client, interaction.guildId);
 
     // embed 출력
     // const embed = new EmbedBuilder()
@@ -89,11 +89,16 @@ module.exports = {
   async autocomplete(interaction) {
     const focusedValue = interaction.options.getFocused();
     // console.log("hi")
-    const allParties = await partyService.findByName(focusedValue);
+    const allParties = await partyService.findByName(
+      interaction.guildId,
+      focusedValue
+    );
     // console.log(allParties);
     // findName에 검색어 전달해서 필터링 가능
     const choices = allParties.map((p) => ({
-      name: `${p.party_name} | ${p.contents} | ${formatDateWithKoreanDay(p.start_time)}`,
+      name: `${p.party_name} | ${p.contents} | ${formatDateWithKoreanDay(
+        p.start_time
+      )}`,
       value: `${p.id}`,
     }));
     await interaction.respond(

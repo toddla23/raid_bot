@@ -26,7 +26,7 @@ module.exports = {
     if (result1.dealer.length != 0 || result1.supporter.length != 0) {
       return await interaction.reply({
         content: `😰 ${partyValue} 파티에 공대원이 있어요.`,
-        ephemeral: true
+        ephemeral: true,
       });
     }
 
@@ -35,14 +35,17 @@ module.exports = {
     await interaction.reply({
       content: `🗑️ ${partyValue} 파티를 삭제했습니다.`,
     });
-    await sendPartyList(interaction.client);
+    await sendPartyList(interaction.client, interaction.guildId);
   },
 
   // 자동완성 (내가 만든 파티만 보여주기)
   async autocomplete(interaction) {
     const focusedValue = interaction.options.getFocused();
 
-    const myParties = await partyService.findByName(focusedValue);
+    const myParties = await partyService.findByName(
+      interaction.guildId,
+      focusedValue
+    );
 
     const choices = myParties.map((p) => ({
       name: `${p.party_name} | ${p.contents} | ${formatDateWithKoreanDay(

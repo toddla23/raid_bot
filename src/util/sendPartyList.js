@@ -2,55 +2,73 @@
 const { EmbedBuilder } = require("discord.js");
 const getCharacterData = require("./lostarkApi.js");
 const partyService = require("../service/raid/party.js");
-const { bbsChannelId} = require("../config.json");
-
+const bbsService = require("../service/bbs.js");
 
 let lastMessageId = null; // 마지막으로 보낸 메시지 ID 저장
 
-async function sendPartyList(client) {
-  const result = await partyService.findAllParty();
-  const channel = client.channels.cache.get(bbsChannelId);
+async function sendPartyList(client, guild_id) {
+  const bbsId = bbsService.findBbsIdByGuildId(guild_id);
+  console.log(bbsId);
 
+  const result = await partyService.findAllParty(guild_id);
+  const channel = client.channels.cache.get(bbsId.bbs_id);
   if (!channel) return;
 
   const embeds = await Promise.all(
     result.map(async (party) => {
       const dealers = await Promise.all(
-        party.dealer.map(d => getCharacterData(d.character_name))
+        party.dealer.map((d) => getCharacterData(d.character_name))
       );
       const supporters = await Promise.all(
-        party.supporter.map(s => getCharacterData(s.character_name))
+        party.supporter.map((s) => getCharacterData(s.character_name))
       );
 
       return new EmbedBuilder()
-        .setTitle(`${party.id}. ${party.party_name}  ${dealers.length === 6 & supporters.length == 2? "[마감]" : ""}`)
+        .setTitle(
+          `${party.id}. ${party.party_name}  ${
+            (dealers.length === 6) & (supporters.length == 2) ? "[마감]" : ""
+          }`
+        )
         .addFields(
           { name: "목표", value: party.contents, inline: true },
-          { 
-            name: "출발 시간", 
-            value: formatDate(party.start_time), 
-            inline: false 
+          {
+            name: "출발 시간",
+            value: formatDate(party.start_time),
+            inline: false,
           },
           {
             name: `딜러 (${dealers.length} / 6)`,
-            value: dealers.length === 0
-              ? "없음"
-              : dealers.map(d => `${d.CharacterName} | ${d.CharacterClassName} (${d.ItemAvgLevel})`).join("\n")
+            value:
+              dealers.length === 0
+                ? "없음"
+                : dealers
+                    .map(
+                      (d) =>
+                        `${d.CharacterName} | ${d.CharacterClassName} (${d.ItemAvgLevel})`
+                    )
+                    .join("\n"),
           },
           {
             name: `서포터 (${supporters.length} / 2)`,
-            value: supporters.length === 0
-              ? "없음"
-              : supporters.map(s => `${s.CharacterName} | ${s.CharacterClassName} (${s.ItemAvgLevel})`).join("\n")
+            value:
+              supporters.length === 0
+                ? "없음"
+                : supporters
+                    .map(
+                      (s) =>
+                        `${s.CharacterName} | ${s.CharacterClassName} (${s.ItemAvgLevel})`
+                    )
+                    .join("\n"),
           }
         );
     })
   );
 
   // 파티가 없으면 따로 embed
-  const finalEmbeds = embeds.length === 0
-    ? [ new EmbedBuilder().setDescription("😢 현재 파티가 없습니다.") ]
-    : embeds;
+  const finalEmbeds =
+    embeds.length === 0
+      ? [new EmbedBuilder().setDescription("😢 현재 파티가 없습니다.")]
+      : embeds;
 
   if (lastMessageId) {
     try {
@@ -59,7 +77,7 @@ async function sendPartyList(client) {
       return;
     } catch (err) {
       console.error("메시지 수정 실패, 새로 보냄:", err.message);
-      lastMessageId = null; 
+      lastMessageId = null;
     }
   }
 
