@@ -206,13 +206,14 @@ const findByIds = async (partyIds) => {
   }
 };
 
-const findByUserId = async (userId) => {
+const findByUserId = async (guildId, userId) => {
   try {
     const now = new Date();
     const [results, field] = await connection.query(
-      "SELECT id, contents, party_name, start_time, cnt FROM party_member_count where id in (SELECT party_id FROM raid.member m WHERE user_id = ?) and  start_time BETWEEN ? and ? ORDER BY start_time",
+      "SELECT id, contents, party_name, start_time, cnt FROM party_member_count WHERE id in (SELECT party_id FROM raid.member m WHERE user_id = ?) AND guild_id = ? AND  start_time BETWEEN ? and ? ORDER BY start_time",
       [
         userId,
+        guildId,
         dateFormat(now),
         dateFormat(new Date(now.setDate(now.getDate() + 7))),
       ]
