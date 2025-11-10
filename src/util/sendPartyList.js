@@ -4,14 +4,12 @@ const getCharacterData = require("./lostarkApi.js");
 const partyService = require("../service/raid/party.js");
 const bbsService = require("../service/bbs.js");
 
-let lastMessageId = null; // 마지막으로 보낸 메시지 ID 저장
+let lastMessages = []; // 마지막으로 보낸 메시지 ID 저장
 
 async function sendPartyList(client, guild_id) {
-  const bbsId = bbsService.findBbsIdByGuildId(guild_id);
-  console.log(bbsId);
-
+  const bbsId = (await bbsService.findBbsIdByGuildId(guild_id)).bbs_id;
   const result = await partyService.findAllParty(guild_id);
-  const channel = client.channels.cache.get(bbsId.bbs_id);
+  const channel = client.channels.cache.get(bbsId);
   if (!channel) return;
 
   const embeds = await Promise.all(
@@ -70,20 +68,26 @@ async function sendPartyList(client, guild_id) {
       ? [new EmbedBuilder().setDescription("😢 현재 파티가 없습니다.")]
       : embeds;
 
-  if (lastMessageId) {
+  const lastMessage = lastMessages.find(
+    (lastMessage) => lastMessage.bbsId == bbsId
+  );
+
+  if (lastMessage) {
     try {
-      const msg = await channel.messages.fetch(lastMessageId);
+      const msg = await channel.messages.fetch(lastMessage.messageId);
       await msg.edit({ embeds: finalEmbeds });
       return;
     } catch (err) {
       console.error("메시지 수정 실패, 새로 보냄:", err.message);
-      lastMessageId = null;
+      lastMessages = lastMessages.filter(
+        (lastMessage) => lastMessage.bbsId != bbsId
+      );
     }
   }
 
   // 기존 메시지 없거나 수정 실패 → 새로 전송
   const newMsg = await channel.send({ embeds: finalEmbeds });
-  lastMessageId = newMsg.id;
+  lastMessages.push({ bbsId: bbsId, messageId: newMsg.id });
 }
 
 function formatDate(date) {

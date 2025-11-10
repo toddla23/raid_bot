@@ -37,6 +37,10 @@ async function registerSlashCommands() {
       Routes.applicationGuildCommands(clientId, guildId), // 테스트용 길드 커맨드
       { body: commands }
     );
+        await rest.put(
+      Routes.applicationGuildCommands(clientId, '1436998835200327692'), // 테스트용 길드 커맨드
+      { body: commands }
+    );
 
     console.log("✅ 슬래시 커맨드 등록 완료!");
   } catch (error) {
