@@ -48,7 +48,13 @@ module.exports = {
       "날짜"
     )} ${interaction.options.getString("시간")}:00`;
 
-    const result = await partyService.addParty(boss, name, time);
+    const result = await partyService.addParty(
+      interaction.guildId,
+      boss,
+      name,
+      time
+    );
+
     if (!result) {
       interaction.reply({ content: "error!", ephemeral: true });
       return;
@@ -80,23 +86,11 @@ module.exports = {
           value: `${time}`,
         }
       );
-    // interaction.channel.send({ embeds: [embed] });
-    // 여기에서 원하는 이벤트 동작을 추가할 수 있습니다.
-
-    // interaction.reply(`이벤트가 ${hours}:${minutes}에 예약되었습니다.`);
 
     await interaction.reply({
       content: `"${name}"파티가 생성 되었습니다.`,
       ephemeral: true,
     });
-    await sendPartyList(interaction.client);
-
-    // // ✅ 알림 예약 (setTimeout)
-    // const timeoutId = setTimeout(async () => {
-    //   await interaction.channel.send(`⏰ "${name}" 파티 시작 시간입니다!`);
-    //   scheduledParties.delete(partyId);
-    // }, delay);
-
-    // scheduledParties.set(partyId, timeoutId);
+    await sendPartyList(interaction.client, interaction.guildId);
   },
 };

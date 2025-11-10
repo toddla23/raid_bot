@@ -1,10 +1,10 @@
 const connection = require("../../config/connection");
 
-const addParty = async (contentId, name, startTime) => {
+const addParty = async (guildId, contentId, name, startTime) => {
   try {
     const [result, field] = await connection.query(
-      "INSERT INTO party (`contents_id`, `party_name`, `start_time`) VALUES  (?)",
-      [[contentId, name, startTime]]
+      "INSERT INTO party (`guild_id`, `contents_id`, `party_name`, `start_time`) VALUES  (?)",
+      [[guildId, contentId, name, startTime]]
     );
     return result;
   } catch (e) {
@@ -24,12 +24,16 @@ const deleteById = async (partyId) => {
   }
 };
 
-const findAllParty = async () => {
+const findAllParty = async (guildId) => {
   try {
     const now = new Date();
     const [results, field] = await connection.query(
-      "SELECT id, contents, party_name, start_time, cnt FROM party_member_count where start_time BETWEEN ? and ? ORDER BY start_time",
-      [dateFormat(now), dateFormat(new Date(now.setDate(now.getDate() + 7)))]
+      "SELECT id, contents, party_name, start_time, cnt FROM party_member_count WHERE start_time BETWEEN ? and ? AND guild_id = ? ORDER BY start_time",
+      [
+        dateFormat(now),
+        dateFormat(new Date(now.setDate(now.getDate() + 7))),
+        guildId,
+      ]
     );
     const result = await Promise.all(
       results.map(async (result) => {
@@ -133,12 +137,13 @@ const findByDay = async (dayNumber) => {
   }
 };
 
-const findByName = async (name) => {
+const findByName = async (guildId, name) => {
   try {
     const now = new Date();
     const [results, field] = await connection.query(
-      "SELECT id, contents, party_name, start_time, cnt FROM party_member_count where party_name like ? and  start_time BETWEEN ? and ? ORDER BY start_time",
+      "SELECT id, contents, party_name, start_time, cnt FROM party_member_count WHERE guild_id = ? AND party_name like ? AND  start_time BETWEEN ? AND ? ORDER BY start_time",
       [
+        guildId,
         "%" + name + "%",
         dateFormat(now),
         dateFormat(new Date(now.setDate(now.getDate() + 7))),
@@ -201,13 +206,14 @@ const findByIds = async (partyIds) => {
   }
 };
 
-const findByUserId = async (userId) => {
+const findByUserId = async (guildId, userId) => {
   try {
     const now = new Date();
     const [results, field] = await connection.query(
-      "SELECT id, contents, party_name, start_time, cnt FROM party_member_count where id in (SELECT party_id FROM raid.member m WHERE user_id = ?) and  start_time BETWEEN ? and ? ORDER BY start_time",
+      "SELECT id, contents, party_name, start_time, cnt FROM party_member_count WHERE id in (SELECT party_id FROM raid.member m WHERE user_id = ?) AND guild_id = ? AND  start_time BETWEEN ? and ? ORDER BY start_time",
       [
         userId,
+        guildId,
         dateFormat(now),
         dateFormat(new Date(now.setDate(now.getDate() + 7))),
       ]

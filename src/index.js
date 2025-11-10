@@ -33,11 +33,19 @@ async function registerSlashCommands() {
   try {
     console.log("슬래시 커맨드 등록 중...");
 
+    // await rest.put(
+    //   Routes.applicationGuildCommands(clientId, guildId), // 테스트용 길드 커맨드
+    //   { body: commands }
+    // );
+    //     await rest.put(
+    //   Routes.applicationGuildCommands(clientId, '1436998835200327692'), // 테스트용 길드 커맨드
+    //   { body: commands }
+    // );
+
     await rest.put(
-      Routes.applicationGuildCommands(clientId, guildId), // 테스트용 길드 커맨드
+      Routes.applicationCommands(clientId), // 테스트용 길드 커맨드
       { body: commands }
     );
-
     console.log("✅ 슬래시 커맨드 등록 완료!");
   } catch (error) {
     console.error(error);
@@ -113,7 +121,6 @@ async function registerSlashCommands() {
 
   client.login(token);
 })();
-
 
 //node cron 으로 스케줄링 하는거
 /*

@@ -4,7 +4,6 @@ const partyService = require("../service/raid/party.js");
 const sendPartyList = require("../util/sendPartyList.js");
 const formatDateWithKoreanDay = require("../util/formatDate");
 
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("탈퇴")
@@ -30,7 +29,7 @@ module.exports = {
       ephemeral: true,
     });
 
-    await sendPartyList(interaction.client);
+    await sendPartyList(interaction.client, interaction.guildId);
   },
 
   // 자동완성 (사용자가 참여한 파티만 보여주기)
@@ -38,11 +37,16 @@ module.exports = {
     const userId = interaction.user.id;
 
     // 이 함수는 "유저가 현재 참여 중인 파티 목록"을 반환한다고 가정
-    const joinedParties = await partyService.findByUserId(userId);
+    const joinedParties = await partyService.findByUserId(
+      interaction.guildId,
+      userId
+    );
 
     // Discord에 보낼 choices 배열
     const choices = joinedParties.map((p) => ({
-      name: `${p.party_name} | ${p.contents} | ${formatDateWithKoreanDay(p.start_time)}`, // 유저가 보는 이름
+      name: `${p.party_name} | ${p.contents} | ${formatDateWithKoreanDay(
+        p.start_time
+      )}`, // 유저가 보는 이름
       value: `${p.id}`, // 실제 커맨드에서 넘어오는 값
     }));
 
