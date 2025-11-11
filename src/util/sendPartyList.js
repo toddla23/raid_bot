@@ -6,9 +6,9 @@ const bbsService = require("../service/bbs.js");
 
 let lastMessages = []; // 마지막으로 보낸 메시지 ID 저장 {bbsId: string, messageId:string}
 
-async function sendPartyList(client, guild_id) {
-  const bbsId = (await bbsService.findBbsIdByGuildId(guild_id)).bbs_id;
-  const result = await partyService.findAllParty(guild_id);
+async function sendPartyList(client, guildId) {
+  const bbsId = (await bbsService.findBbsIdByGuildId(guildId)).bbs_id;
+  const result = await partyService.findAllParty(guildId);
   const channel = client.channels.cache.get(bbsId);
   if (!channel) return;
 
@@ -69,7 +69,8 @@ async function sendPartyList(client, guild_id) {
       : embeds;
 
   const lastMessage = lastMessages.find(
-    (lastMessage) => lastMessage.bbsId == bbsId
+    (lastMessage) =>
+      (lastMessage.bbsId == bbsId) & (lastMessage.guildId == guildId)
   );
 
   if (lastMessage) {
@@ -79,15 +80,17 @@ async function sendPartyList(client, guild_id) {
       return;
     } catch (err) {
       console.error("메시지 수정 실패, 새로 보냄:", err.message);
-      lastMessages = lastMessages.filter(
-        (lastMessage) => lastMessage.bbsId != bbsId
-      );
     }
   }
+  lastMessages = lastMessages.filter(
+    (lastMessage) => lastMessage.guildId != guildId
+  );
+  console.log(lastMessage);
 
   // 기존 메시지 없거나 수정 실패 → 새로 전송
   const newMsg = await channel.send({ embeds: finalEmbeds });
-  lastMessages.push({ bbsId: bbsId, messageId: newMsg.id });
+  lastMessages.push({ guildId: guildId, bbsId: bbsId, messageId: newMsg.id });
+  console.log(lastMessages);
 }
 
 function formatDate(date) {
