@@ -4,7 +4,7 @@ const getCharacterData = require("./lostarkApi.js");
 const partyService = require("../service/raid/party.js");
 const bbsService = require("../service/bbs.js");
 
-let lastMessages = []; // 마지막으로 보낸 메시지 ID 저장
+let lastMessages = []; // 마지막으로 보낸 메시지 ID 저장 {bbsId: string, messageId:string}
 
 async function sendPartyList(client, guild_id) {
   const bbsId = (await bbsService.findBbsIdByGuildId(guild_id)).bbs_id;
