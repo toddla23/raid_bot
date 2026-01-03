@@ -23,6 +23,10 @@ const content = [
     name: "종막 : 최후의 날",
     value: 6,
   },
+  {
+    name: "고통의 마녀 세르카",
+    value: 8,
+  },
 ];
 
 module.exports = content;
