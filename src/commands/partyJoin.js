@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const memberService = require("../service/member.js");
 const partyService = require("../service/party.js");
 const getCharacterData = require("../util/lostarkApi.js");
-const sendPartyList = require("../util/sendPartyList.js");
+const {sendPartyList} = require("../util/sendPartyList.js");
 const formatDateWithKoreanDay = require("../util/formatDate.js");
 
 const roleChoices = [

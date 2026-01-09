@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const memberService = require("../service/member.js");
 const partyService = require("../service/party.js");
-const sendPartyList = require("../util/sendPartyList.js");
+const {sendPartyList} = require("../util/sendPartyList.js");
 const formatDateWithKoreanDay = require("../util/formatDate.js");
 
 module.exports = {

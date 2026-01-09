@@ -1,12 +1,11 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
-const sendPartyList = require("../util/sendPartyList.js");
+const {sendPartyList} = require("../util/sendPartyList.js");
 
 const contents = require("../util/content.js");
 const timeParesr = require("../util/timeParesr.js");
 
 const partyService = require("../service/party.js");
-const memberService = require("../service/member.js");
 
 global.scheduledParties = new Map();
 
