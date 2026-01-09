@@ -1,8 +1,8 @@
 const { SlashCommandBuilder } = require("discord.js");
-const memberService = require("../service/raid/member.js");
-const partyService = require("../service/raid/party.js");
+const memberService = require("../service/member.js");
+const partyService = require("../service/party.js");
 const sendPartyList = require("../util/sendPartyList.js");
-const formatDateWithKoreanDay = require("../util/formatDate");
+const formatDateWithKoreanDay = require("../util/formatDate.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,16 +14,14 @@ module.exports = {
           .setName("파티명")
           .setDescription("탈퇴할 파티를 선택하세요")
           .setRequired(true)
-          .setAutocomplete(true) // ✅ 자동완성 활성화
+          .setAutocomplete(true)
     ),
 
-  // 실제 탈퇴 처리
   async execute(interaction) {
     const partyValue = interaction.options.getString("파티명");
     const userId = interaction.user.id;
 
-    // 탈퇴 처리
-    await memberService.deleteByPartyAndName(partyValue, userId);
+    await memberService.deleteByPartyAndUser(partyValue, userId);
     await interaction.reply({
       content: `✅ 파티에서 탈퇴했습니다.`,
       ephemeral: true,
@@ -32,24 +30,20 @@ module.exports = {
     await sendPartyList(interaction.client, interaction.guildId);
   },
 
-  // 자동완성 (사용자가 참여한 파티만 보여주기)
   async autocomplete(interaction) {
     const userId = interaction.user.id;
-
-    // 이 함수는 "유저가 현재 참여 중인 파티 목록"을 반환한다고 가정
     const joinedParties = await partyService.findByUserId(
       interaction.guildId,
       userId
     );
 
-    // Discord에 보낼 choices 배열
     const choices = joinedParties.map((p) => ({
-      name: `${p.party_name} | ${p.contents} | ${formatDateWithKoreanDay(
-        p.start_time
-      )}`, // 유저가 보는 이름
-      value: `${p.id}`, // 실제 커맨드에서 넘어오는 값
+      name: `${p.party.party_name} | ${p.party.contents} | ${formatDateWithKoreanDay(
+        p.party.start_time
+      )}`,
+      value: `${p.party.id}`,
     }));
 
-    await interaction.respond(choices.slice(0, 25)); // 최대 25개
+    await interaction.respond(choices.slice(0, 25));
   },
 };

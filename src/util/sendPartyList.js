@@ -1,37 +1,38 @@
 // util/sendPartyList.js
 const { EmbedBuilder } = require("discord.js");
 const getCharacterData = require("./lostarkApi.js");
-const partyService = require("../service/raid/party.js");
+const partyService = require("../service/party.js");
 const bbsService = require("../service/bbs.js");
+const formatDateWithKoreanDay = require("./formatDate.js");
 
 let lastMessages = []; // 마지막으로 보낸 메시지 ID 저장 {bbsId: string, messageId:string}
 
 async function sendPartyList(client, guild_id) {
   const bbsId = (await bbsService.findBbsIdByGuildId(guild_id)).bbs_id;
-  const result = await partyService.findAllParty(guild_id);
+  const results = await partyService.findAllParty(guild_id);
   const channel = client.channels.cache.get(bbsId);
   if (!channel) return;
 
   const embeds = await Promise.all(
-    result.map(async (party) => {
+    results.map(async (result) => {
       const dealers = await Promise.all(
-        party.dealer.map((d) => getCharacterData(d.character_name))
+        result.members.dealer.map((d) => getCharacterData(d.character_name))
       );
       const supporters = await Promise.all(
-        party.supporter.map((s) => getCharacterData(s.character_name))
+        result.members.supporter.map((s) => getCharacterData(s.character_name))
       );
 
       return new EmbedBuilder()
         .setTitle(
-          `${party.id}. ${party.party_name}  ${
+          `${result.party.party_name}  ${
             (dealers.length === 6) & (supporters.length == 2) ? "[마감]" : ""
           }`
         )
         .addFields(
-          { name: "목표", value: party.contents, inline: true },
+          { name: "목표", value: result.party.contents, inline: true },
           {
             name: "출발 시간",
-            value: formatDate(party.start_time),
+            value: `${formatDateWithKoreanDay(result.party.start_time)}`,
             inline: false,
           },
           {
@@ -88,18 +89,6 @@ async function sendPartyList(client, guild_id) {
   // 기존 메시지 없거나 수정 실패 → 새로 전송
   const newMsg = await channel.send({ embeds: finalEmbeds });
   lastMessages.push({ bbsId: bbsId, messageId: newMsg.id });
-}
-
-function formatDate(date) {
-  const koreanDays = ["일", "월", "화", "수", "목", "금", "토"];
-  const dayOfWeek = koreanDays[date.getDay()];
-
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  const hour = date.getHours().toString().padStart(2, "0");
-  const minute = date.getMinutes().toString().padStart(2, "0");
-
-  return `${month}.${day} (${dayOfWeek}) ${hour}:${minute}`;
 }
 
 module.exports = sendPartyList;

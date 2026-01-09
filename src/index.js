@@ -5,9 +5,6 @@ const path = require("path");
 const { REST, Routes } = require("discord.js");
 const { clientId, guildId, token } = require("./config.json");
 
-const cron = require("node-cron");
-const partyService = require("./service/raid/party.js");
-
 // 슬래시 커맨드 등록 함수
 async function registerSlashCommands() {
   const commands = [];
@@ -32,18 +29,8 @@ async function registerSlashCommands() {
 
   try {
     console.log("슬래시 커맨드 등록 중...");
-
-    // await rest.put(
-    //   Routes.applicationGuildCommands(clientId, guildId), // 테스트용 길드 커맨드
-    //   { body: commands }
-    // );
-    //     await rest.put(
-    //   Routes.applicationGuildCommands(clientId, '1436998835200327692'), // 테스트용 길드 커맨드
-    //   { body: commands }
-    // );
-
     await rest.put(
-      Routes.applicationCommands(clientId), // 테스트용 길드 커맨드
+      Routes.applicationCommands(clientId),
       { body: commands }
     );
     console.log("✅ 슬래시 커맨드 등록 완료!");
@@ -121,18 +108,3 @@ async function registerSlashCommands() {
 
   client.login(token);
 })();
-
-//node cron 으로 스케줄링 하는거
-/*
-cron.schedule("* * * * *", async () => {
-  const now = new Date();
-  const parties = await partyService.findUpcomingNotNotified(now);
-
-  for (const party of parties) {
-    const channel = await client.channels.fetch(party.channel_id);
-    await channel.send(`⏰ "${party.party_name}" 파티 시작 시간입니다!`);
-    await partyService.markNotified(party.id);
-  }
-});
-
-*/

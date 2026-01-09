@@ -1,7 +1,8 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const getCharacterData = require("../util/lostarkApi.js");
 
-const partyService = require("../service/raid/party");
+const partyService = require("../service/party");
+const formatDateWithKoreanDay = require("../util/formatDate.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -9,47 +10,43 @@ module.exports = {
     .setDescription("내가 참여하는 파티를 확인해요"),
 
   async execute(interaction) {
-    const result = await partyService.findByUserId(interaction.user.id);
-    if (result.length == 0) {
+    const results = await partyService.findByUserId(interaction.user.id);
+    if (results.length == 0) {
       await interaction.reply({
-        content: "파티가 없어요 ㅠㅠ",
+        content: "파티가 없어요 😣",
         ephemeral: true,
       });
       return;
     }
 
     const embeds = await Promise.all(
-      result.map(async (party) => {
+      results.map(async (result) => {
         const dealers = await Promise.all(
-          party.dealer.map(async (dealer) => {
+          result.members.dealer.map(async (dealer) => {
             const characterData = await getCharacterData(dealer.character_name);
             return characterData;
           })
         );
+
         const supporters = await Promise.all(
-          party.supporter.map(async (supporter) => {
+          result.members.supporter.map(async (supporter) => {
             const characterData = await getCharacterData(
               supporter.character_name
             );
             return characterData;
           })
         );
-        // console.log(dealers);
-        // console.log(supporters);
-
         const embed = new EmbedBuilder()
-          .setTitle(`${party.id}. ${party.party_name}`)
+          .setTitle(`${result.party.party_name}`)
           .addFields(
             {
               name: "목표",
-              value: `${party.contents}`,
+              value: `${result.party.contents}`,
               inline: true,
             },
             {
               name: "출발 시간",
-              value: `${
-                party.start_time.getMonth() + 1
-              }월 ${party.start_time.getDate()}일 ${party.start_time.getHours()}:${party.start_time.getMinutes()}`,
+              value: `${formatDateWithKoreanDay(result.party.start_time)}`,
               inline: false,
             },
             {

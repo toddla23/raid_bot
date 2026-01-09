@@ -2,12 +2,11 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
 const sendPartyList = require("../util/sendPartyList.js");
 
-const contents = require("../util/content");
-const difficulty = require("../util/difficulty");
+const contents = require("../util/content.js");
 const timeParesr = require("../util/timeParesr.js");
 
-const partyService = require("../service/raid/party.js");
-const memberService = require("../service/raid/member.js");
+const partyService = require("../service/party.js");
+const memberService = require("../service/member.js");
 
 global.scheduledParties = new Map();
 
@@ -59,7 +58,6 @@ module.exports = {
       interaction.reply({ content: "error!", ephemeral: true });
       return;
     }
-    // console.log(result);
     const startTime = time;
     const delay = timeParesr(startTime);
 
@@ -70,22 +68,6 @@ module.exports = {
       });
       return;
     }
-
-    const partyId = result.insertId;
-    // console.log(await memberService.findByParty(partyId));
-    const result1 = await memberService.findUserIdByParty(partyId);
-    const embed = new EmbedBuilder()
-      .setTitle(`${result1.party.id}. ${result1.party.party_name}`)
-      .addFields(
-        {
-          name: "목표",
-          value: `${result1.party.name}`,
-        },
-        {
-          name: "시간",
-          value: `${time}`,
-        }
-      );
 
     await interaction.reply({
       content: `"${name}"파티가 생성 되었습니다.`,

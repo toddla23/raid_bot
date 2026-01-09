@@ -1,5 +1,10 @@
 const baseUrl = "https://developer-lostark.game.onstove.com";
 
+/**
+ *
+ * @param {string} characterName
+ * @returns {Promise<{CharacterName:string, CharacterClassName:string, ItemAvgLevel:string, CombatPower:string}>}
+ */
 async function getCharacterData(characterName) {
   const response = await fetch(
     `${baseUrl}/armories/characters/${characterName}/profiles`,
