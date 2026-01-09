@@ -17,7 +17,6 @@ const addParty = async (guildId, contentId, name, startTime) => {
     startTime
   );
   const result = await partyRepository.findById(insertId.insertId);
-  console.log(result)
   return result;
 };
 
@@ -82,13 +81,31 @@ const findByName = async (guildId, name) => {
   return result;
 };
 
+/**
+ * @param {string} dateString
+ * 
+ */
+const findByDateTime = async (dateString) => {
+  const partys = await partyRepository.findByDateTime(dateString);
+    const result = await Promise.all(
+    partys.map(async (party) => {
+      const members = await memberService.findByParty(party.id);
+      return {
+        party,
+        members,
+      };
+    })
+  );
+  return result;
+};
 
 const partyService = {
   addParty,
   findAllParty,
   findByUserId,
   deleteById,
-  findByName
+  findByName,
+  findByDateTime
 };
 
 module.exports = partyService;

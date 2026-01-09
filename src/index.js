@@ -5,6 +5,10 @@ const path = require("path");
 const { REST, Routes } = require("discord.js");
 const { clientId, guildId, token } = require("./config.json");
 
+const cron = require("node-cron");
+const sendPartyDM = require("./util/sendDM");
+const { refreshAllPartyList } = require("./util/sendPartyList");
+
 // 슬래시 커맨드 등록 함수
 async function registerSlashCommands() {
   const commands = [];
@@ -29,10 +33,7 @@ async function registerSlashCommands() {
 
   try {
     console.log("슬래시 커맨드 등록 중...");
-    await rest.put(
-      Routes.applicationCommands(clientId),
-      { body: commands }
-    );
+    await rest.put(Routes.applicationCommands(clientId), { body: commands });
     console.log("✅ 슬래시 커맨드 등록 완료!");
   } catch (error) {
     console.error(error);
@@ -67,7 +68,15 @@ async function registerSlashCommands() {
 
   client.once("ready", () => {
     console.log(`${client.user.tag} 봇이 준비되었습니다!`);
+    // 매 분 할 작업
+    cron.schedule("0 * * * * *", async () => {
+      const now = new Date();
+      if (now.getTime() == 6) refreshAllPartyList(client);
+      now.setMinutes(now.getMinutes() + 5);
+      sendPartyDM(now, client);
+    });
   });
+
   client.on("interactionCreate", async (interaction) => {
     if (interaction.isAutocomplete()) {
       const command = client.commands.get(interaction.commandName);

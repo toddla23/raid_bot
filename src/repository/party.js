@@ -119,6 +119,22 @@ const findByName = async (guildId, name) => {
     console.log(e);
   }
 };
+/**
+ *
+ * @param {string} dateString
+ * @returns {Promise<{id:number, contents:string, party_name:string, start_time:Date, cnt:number}[]>}
+ */
+const findByDateTime = async (dateString) => {
+  try {
+    const [results, field] = await connection.query(
+      "SELECT id, contents, party_name, start_time, cnt FROM party_member_count where start_time = ?",
+      [dateString]
+    );
+    return results;
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 function dateFormat(source) {
   return (
@@ -137,6 +153,7 @@ const partyRepository = {
   findAllParty,
   findByUserId,
   findByName,
+  findByDateTime,
 };
 
 module.exports = partyRepository;

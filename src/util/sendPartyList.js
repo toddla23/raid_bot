@@ -91,4 +91,12 @@ async function sendPartyList(client, guild_id) {
   lastMessages.push({ bbsId: bbsId, messageId: newMsg.id });
 }
 
-module.exports = sendPartyList;
+async function refreshAllPartyList(client) {
+  const a = await bbsService.findAll();
+  a.map((b)=>{
+    sendPartyList(client, b.guild_id)
+  })
+  
+}
+
+module.exports = {sendPartyList, refreshAllPartyList};

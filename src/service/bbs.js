@@ -35,6 +35,21 @@ const findBbsIdByGuildId = async (guildId) => {
     console.log(e);
   }
 };
+/**
+ * 
+ * @returns {Promise<{bbs_id: string, guild_id:string}[]>}
+ */
+const findAll = async () => {
+  try {
+    const [result, field] = await connection.query(
+      "SELECT bbs_id, guild_id FROM bbs",
+      []
+    );
+    return result;
+  } catch (e) {
+    console.log(e);
+  }
+};
 
-const bbsService = { addBbsId, updateBbsIdByGuildId, findBbsIdByGuildId };
+const bbsService = { addBbsId, updateBbsIdByGuildId, findBbsIdByGuildId, findAll };
 module.exports = bbsService;
