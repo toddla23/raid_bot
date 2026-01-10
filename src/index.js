@@ -71,7 +71,7 @@ async function registerSlashCommands() {
     // 매 분 할 작업
     cron.schedule("0 * * * * *", async () => {
       const now = new Date();
-      if (now.getTime() == 6) refreshAllPartyList(client);
+      if (now.getHours() == 6) refreshAllPartyList(client);
       now.setMinutes(now.getMinutes() + 5);
       sendPartyDM(now, client);
     });
